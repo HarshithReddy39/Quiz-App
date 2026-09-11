@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>India GK Quiz</title>
+
+  <style>
+    /* =========================
+       RESET & BASE
+    ========================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #ff6b35;
+      --primary-dark: #e85a2a;
+      --navy: #14213d;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --background: #f4f7fb;
+      --white: #ffffff;
+      --border: #e5e7eb;
+      --success: #16a34a;
+      --success-bg: #dcfce7;
+      --danger: #dc2626;
+      --danger-bg: #fee2e2;
+      --shadow: 0 20px 50px rgba(20, 33, 61, 0.10);
+      --radius: 20px;
+    }
+
+    body {
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont,
+                   "Segoe UI", Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(255, 107, 53, 0.10), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(20, 33, 61, 0.08), transparent 30%),
+        var(--background);
+      min-height: 100vh;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    /* =========================
+       APP CONTAINER
+    ========================== */
+    .app {
+      width: 100%;
+      max-width: 820px;
+    }
+
+    .quiz-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+
+    /* =========================
+       HEADER
+    ========================== */
+    .header {
+      background: linear-gradient(135deg, var(--navy), #243b64);
+      color: white;
+      padding: 30px 34px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::after {
+      content: "";
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: rgba(255, 107, 53, 0.18);
+      right: -50px;
+      top: -70px;
+    }
+
+    .brand {
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand h1 {
+      font-size: 28px;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+    }
+
+    .brand p {
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 14px;
+    }
+
+    /* =========================
+       PROGRESS
+    ========================== */
+    .progress-section {
+      padding: 22px 34px 0;
+    }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: #edf0f4;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), #ff9f1c);
+      border-radius: inherit;
+      transition: width 0.4s ease;
+    }
+
+    /* =========================
+       QUESTION AREA
+    ========================== */
+    .content {
+      padding: 34px;
+    }
+
+    .question-number {
+      display: inline-flex;
+      align-items: center;
+      background: #fff1eb;
+      color: var(--primary-dark);
+      padding: 7px 12px;
+      border-radius: 50px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    .question {
+      font-size: 26px;
+      line-height: 1.35;
+      color: var(--navy);
+      margin-bottom: 28px;
+      letter-spacing: -0.4px;
+    }
+
+    /* =========================
+       OPTIONS
+    ========================== */
+    .options {
+      display: grid;
+      gap: 13px;
+    }
+
+    .option {
+      width: 100%;
+      border: 2px solid var(--border);
+      background: #fff;
+      border-radius: 14px;
+      padding: 17px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-align: left;
+      cursor: pointer;
+      color: var(--text);
+      transition: all 0.2s ease;
+    }
+
+    .option:hover:not(:disabled) {
+      border-color: var(--primary);
+      background: #fffaf7;
+      transform: translateY(-1px);
+    }
+
+    .option:disabled {
+      cursor: default;
+    }
+
+    .option-letter {
+      min-width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: #f3f4f6;
+      color: #4b5563;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .option-text {
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .option.correct {
+      border-color: var(--success);
+      background: var(--success-bg);
+      color: #166534;
+    }
+
+    .option.correct .option-letter {
+      background: var(--success);
+      color: white;
+    }
+
+    .option.wrong {
+      border-color: var(--danger);
+      background: var(--danger-bg);
+      color: #991b1b;
+    }
+
+    .option.wrong .option-letter {
+      background: var(--danger);
+      color: white;
+    }
+
+    /* =========================
+       FEEDBACK
+    ========================== */
+    .feedback {
+      margin-top: 20px;
+      padding: 15px 17px;
+      border-radius: 12px;
+      display: none;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .feedback.correct {
+      display: block;
+      background: var(--success-bg);
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    .feedback.wrong {
+      display: block;
+      background: var(--danger-bg);
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    /* =========================
+       FOOTER / NEXT BUTTON
+    ========================== */
+    .footer {
+      padding: 0 34px 34px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .next-btn {
+      border: none;
+      background: var(--navy);
+      color: white;
+      padding: 13px 24px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: none;
+    }
+
+    .next-btn:hover {
+      background: #0d172b;
+      transform: translateY(-1px);
+    }
+
+    /* =========================
+       RESULT SCREEN
+    ========================== */
+    .result {
+      display: none;
+      padding: 55px 34px 60px;
+      text-align: center;
+    }
+
+    .result-icon {
+      width: 85px;
+      height: 85px;
+      margin: 0 auto 22px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #ff6b35, #ff9f1c);
+      color: white;
+      font-size: 38px;
+      box-shadow: 0 12px 30px rgba(255, 107, 53, 0.25);
+    }
+
+    .result h2 {
+      color: var(--navy);
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .result p {
+      color: var(--muted);
+      margin-bottom: 25px;
+    }
+
+    .score {
+      font-size: 48px;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .score-label {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 30px;
+    }
+
+    .restart-btn {
+      border: none;
+      background: var(--primary);
+      color: white;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .restart-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(255, 107, 53, 0.25);
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================== */
+    @media (max-width: 600px) {
+      body {
+        padding: 12px;
+      }
+
+      .header {
+        padding: 24px 22px;
+      }
+
+      .brand h1 {
+        font-size: 23px;
+      }
+
+      .progress-section {
+        padding: 20px 22px 0;
+      }
+
+      .content {
+        padding: 26px 22px;
+      }
+
+      .question {
+        font-size: 21px;
+      }
+
+      .footer {
+        padding: 0 22px 25px;
+      }
+
+      .option {
+        padding: 14px;
+      }
+
+      .option-letter {
+        min-width: 34px;
+        height: 34px;
+      }
+
+      .result {
+        padding: 45px 22px 50px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="app">
+    <div class="quiz-card">
+
+      <!-- Header -->
+      <header class="header">
+        <div class="brand">
+          <h1>🇮🇳 India GK Quiz</h1>
+          <p>Test your knowledge about India</p>
+        </div>
+      </header>
+
+      <!-- Quiz Screen -->
+      <section id="quizScreen">
+
+        <div class="progress-section">
+          <div class="progress-info">
+            <span id="progressText">Question 1 of 10</span>
+            <span id="scoreText">Score: 0</span>
+          </div>
+
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
+
+        <div class="content">
+
+          <div class="question-number" id="questionNumber">
+            QUESTION 1
+          </div>
+
+          <h2 class="question" id="question">
+            Loading question...
+          </h2>
+
+          <div class="options" id="options"></div>
+
+          <div class="feedback" id="feedback"></div>
+
+        </div>
+
+        <div class="footer">
+          <button class="next-btn" id="nextBtn">
+            Next Question →
+          </button>
+        </div>
+
+      </section>
+
+      <!-- Result Screen -->
+      <section class="result" id="resultScreen">
+
+        <div class="result-icon">🏆</div>
+
+        <h2>Quiz Completed!</h2>
+
+        <p id="resultMessage">
+          Great job! Here is your final score.
+        </p>
+
+        <div class="score" id="finalScore">
+          0/10
+        </div>
+
+        <div class="score-label">
+          Your final score
+        </div>
+
+        <button class="restart-btn" id="restartBtn">
+          🔄 Try Again
+        </button>
+
+      </section>
+
+    </div>
+  </main>
+
+
+  <script>
+    // ==========================================
+    // QUIZ QUESTIONS
+    // ==========================================
+
+    const questions = [
+      {
+        question: "What is the capital city of India?",
+        options: [
+          "Mumbai",
+          "New Delhi",
+          "Kolkata",
+          "Chennai"
+        ],
+        answer: 1
+      },
+
+      {
+        question: "Who is known as the Father of the Nation in India?",
+        options: [
+          "Jawaharlal Nehru",
+          "Subhas Chandra Bose",
+          "Mahatma Gandhi",
+          "Sardar Vallabhbhai Patel"
+        ],
+        answer: 2
+      },
+
+      {
+        question: "Which is the largest state in India by area?",
+        options: [
+          "Madhya Pradesh",
+          "Rajasthan",
+          "Maharashtra",
+          "Uttar Pradesh"
+        ],
+        answer: 1
+      },
+
+      {
+        question: "Which river is known as the longest river in India?",
+        options: [
+          "Yamuna",
+          "Godavari",
+          "Ganga",
+          "Narmada"
+        ],
+        answer: 2
+      },
+
+      {
+        question: "Who was the first President of independent India?",
+        options: [
+          "Dr. Rajendra Prasad",
+          "Dr. S. Radhakrishnan",
+          "Jawaharlal Nehru",
+          "Zakir Husain"
+        ],
+        answer: 0
+      },
+
+      {
+        question: "Which Indian city is known as the 'Pink City'?",
+        options: [
+          "Udaipur",
+          "Jodhpur",
+          "Jaipur",
+          "Bikaner"
+        ],
+        answer: 2
+      },
+
+      {
+        question: "What is the national animal of India?",
+        options: [
+          "Lion",
+          "Bengal Tiger",
+          "Elephant",
+          "Leopard"
+        ],
+        answer: 1
+      },
+
+      {
+        question: "Which is the highest civilian award in India?",
+        options: [
+          "Padma Shri",
+          "Padma Bhushan",
+          "Padma Vibhushan",
+          "Bharat Ratna"
+        ],
+        answer: 3
+      },
+
+      {
+        question: "Which Indian state is famous for the backwaters of Alappuzha?",
+        options: [
+          "Goa",
+          "Kerala",
+          "Tamil Nadu",
+          "Karnataka"
+        ],
+        answer: 1
+      },
+
+      {
+        question: "Who wrote the Indian national anthem 'Jana Gana Mana'?",
+        options: [
+          "Bankim Chandra Chattopadhyay",
+          "Rabindranath Tagore",
+          "Sarojini Naidu",
+          "Sri Aurobindo"
+        ],
+        answer: 1
+      }
+    ];
+
+
+    // ==========================================
+    // STATE
+    // ==========================================
+
+    let currentQuestion = 0;
+    let score = 0;
+    let answered = false;
+
+
+    // ==========================================
+    // DOM ELEMENTS
+    // ==========================================
+
+    const questionElement =
+      document.getElementById("question");
+
+    const optionsElement =
+      document.getElementById("options");
+
+    const questionNumberElement =
+      document.getElementById("questionNumber");
+
+    const progressText =
+      document.getElementById("progressText");
+
+    const scoreText =
+      document.getElementById("scoreText");
+
+    const progressFill =
+      document.getElementById("progressFill");
+
+    const feedbackElement =
+      document.getElementById("feedback");
+
+    const nextButton =
+      document.getElementById("nextBtn");
+
+    const quizScreen =
+      document.getElementById("quizScreen");
+
+    const resultScreen =
+      document.getElementById("resultScreen");
+
+    const finalScore =
+      document.getElementById("finalScore");
+
+    const resultMessage =
+      document.getElementById("resultMessage");
+
+    const restartButton =
+      document.getElementById("restartBtn");
+
+
+    // ==========================================
+    // LOAD QUESTION
+    // ==========================================
+
+    function loadQuestion() {
+
+      answered = false;
+
+      const question = questions[currentQuestion];
+
+      questionElement.textContent =
+        question.question;
+
+      questionNumberElement.textContent =
+        `QUESTION ${currentQuestion + 1}`;
+
+      progressText.textContent =
+        `Question ${currentQuestion + 1} of ${questions.length}`;
+
+      scoreText.textContent =
+        `Score: ${score}`;
+
+      const progress =
+        ((currentQuestion) / questions.length) * 100;
+
+      progressFill.style.width =
+        `${progress}%`;
+
+      optionsElement.innerHTML = "";
+
+      feedbackElement.className = "feedback";
+      feedbackElement.textContent = "";
+
+      nextButton.style.display = "none";
+
+      const letters = ["A", "B", "C", "D"];
+
+      question.options.forEach((option, index) => {
+
+        const button =
+          document.createElement("button");
+
+        button.className = "option";
+
+        button.innerHTML = `
+          <span class="option-letter">
+            ${letters[index]}
+          </span>
+
+          <span class="option-text">
+            ${option}
+          </span>
+        `;
+
+        button.addEventListener(
+          "click",
+          () => selectAnswer(index, button)
+        );
+
+        optionsElement.appendChild(button);
+      });
+    }
+
+
+    // ==========================================
+    // SELECT ANSWER
+    // ==========================================
+
+    function selectAnswer(selectedIndex, selectedButton) {
+
+      if (answered) return;
+
+      answered = true;
+
+      const question =
+        questions[currentQuestion];
+
+      const optionButtons =
+        document.querySelectorAll(".option");
+
+      optionButtons.forEach(button => {
+        button.disabled = true;
+      });
+
+      if (selectedIndex === question.answer) {
+
+        score++;
+
+        selectedButton.classList.add("correct");
+
+        feedbackElement.className =
+          "feedback correct";
+
+        feedbackElement.textContent =
+          "✓ Correct! Excellent answer.";
+
+      } else {
+
+        selectedButton.classList.add("wrong");
+
+        optionButtons[question.answer]
+          .classList.add("correct");
+
+        feedbackElement.className =
+          "feedback wrong";
+
+        feedbackElement.textContent =
+          `✗ Incorrect. The correct answer is "${question.options[question.answer]}".`;
+      }
+
+      scoreText.textContent =
+        `Score: ${score}`;
+
+      nextButton.style.display = "block";
+
+      if (currentQuestion === questions.length - 1) {
+        nextButton.textContent = "View Results →";
+      }
+    }
+
+
+    // ==========================================
+    // NEXT QUESTION
+    // ==========================================
+
+    nextButton.addEventListener("click", () => {
+
+      currentQuestion++;
+
+      if (currentQuestion < questions.length) {
+
+        loadQuestion();
+
+      } else {
+
+        showResults();
+
+      }
+
+    });
+
+
+    // ==========================================
+    // SHOW RESULTS
+    // ==========================================
+
+    function showResults() {
+
+      quizScreen.style.display = "none";
+
+      resultScreen.style.display = "block";
+
+      finalScore.textContent =
+        `${score}/${questions.length}`;
+
+      const percentage =
+        (score / questions.length) * 100;
+
+      if (percentage === 100) {
+
+        resultMessage.textContent =
+          "Perfect score! You have excellent knowledge of India.";
+
+      } else if (percentage >= 70) {
+
+        resultMessage.textContent =
+          "Great work! You have a strong knowledge of India.";
+
+      } else if (percentage >= 50) {
+
+        resultMessage.textContent =
+          "Good effort! A little more practice will make you stronger.";
+
+      } else {
+
+        resultMessage.textContent =
+          "Keep learning! Try the quiz again and improve your score.";
+
+      }
+    }
+
+
+    // ==========================================
+    // RESTART QUIZ
+    // ==========================================
+
+    restartButton.addEventListener("click", () => {
+
+      currentQuestion = 0;
+      score = 0;
+      answered = false;
+
+      resultScreen.style.display = "none";
+      quizScreen.style.display = "block";
+
+      loadQuestion();
+    });
+
+
+    // ==========================================
+    // START APP
+    // ==========================================
+
+    loadQuestion();
+
+  </script>
+
+</body>
+</html>
