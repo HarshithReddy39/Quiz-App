@@ -6,15 +6,18 @@ const passwordError = document.getElementById('password-error');
 const formError = document.getElementById('formError');
 const submitBtn = document.getElementById('submitBtn');
 const toggleBtn = document.getElementById('togglePassword');
+const rememberInput = document.getElementById('remember');
 const eyeIcon = toggleBtn.querySelector('.icon-eye');
 const eyeOffIcon = toggleBtn.querySelector('.icon-eye-off');
 
 // Show / hide password
 toggleBtn.addEventListener('click', () => {
     const isPassword = passwordInput.type === 'password';
+    // isPassword === true means we're about to REVEAL it (switch to text)
     passwordInput.type = isPassword ? 'text' : 'password';
     toggleBtn.setAttribute('aria-pressed', String(isPassword));
     toggleBtn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+    // When revealing (isPassword true): show the "eye-off" icon, hide the plain "eye" icon
     eyeIcon.hidden = isPassword;
     eyeOffIcon.hidden = !isPassword;
 });
@@ -66,25 +69,35 @@ form.addEventListener('submit', async (event) => {
     submitBtn.classList.add('is-loading');
 
     try {
-        // Replace this with your real auth endpoint.
+       
         const response = await fetch('/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 email: emailInput.value.trim(),
                 password: passwordInput.value,
-                remember: document.getElementById('remember').checked
+                remember: rememberInput?.checked ?? false
             })
         });
 
         if (!response.ok) {
-            const data = await response.json().catch(() => ({}));
-            throw new Error(data.message || 'Incorrect email or password.');
+            
+            if (response.status === 401 || response.status === 400) {
+                throw new Error('Incorrect email or password.');
+            }
+            if (response.status === 429) {
+                throw new Error('Too many attempts. Please wait and try again.');
+            }
+            throw new Error('Something went wrong. Please try again.');
         }
 
         window.location.href = 'dashboard.html';
     } catch (err) {
-        formError.textContent = err.message || 'Something went wrong. Try again.';
+        
+        const safeMessage = err instanceof TypeError
+            ? 'Network error. Check your connection and try again.'
+            : (err.message || 'Something went wrong. Try again.');
+        formError.textContent = safeMessage;
     } finally {
         submitBtn.disabled = false;
         submitBtn.classList.remove('is-loading');
