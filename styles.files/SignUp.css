@@ -1,8 +1,4 @@
-/* ---------------------------------------------
-   Tokens (kept identical to login.css — consider
-   moving these into a shared tokens.css if the
-   two pages will keep evolving together)
---------------------------------------------- */
+
 :root {
     --bg: #0b0d10;
     --bg-glow: #14171c;
